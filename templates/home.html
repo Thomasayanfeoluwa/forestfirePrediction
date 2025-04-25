@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Algeria Forest Fire Prediction</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
+                        url('https://images.unsplash.com/photo-1501854140801-50d01698902b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80') no-repeat center center fixed;
+            background-size: cover;
+            color: #333;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        h1 {
+            font-family: 'Montserrat', sans-serif;
+            color: #fff;
+            text-align: center;
+            margin-bottom: 20px;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+        }
+
+        .form-container {
+            background: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            width: 100%;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: #444;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #4CAF50;
+            box-shadow: 0 0 5px rgba(76, 175, 80, 0.3);
+        }
+
+        button {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1.1rem;
+            font-family: 'Montserrat', sans-serif;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        button:hover {
+            background-color: #45a049;
+            transform: translateY(-2px);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .prediction {
+            margin-top: 20px;
+            padding: 15px;
+            background: #e8f5e9;
+            border-radius: 5px;
+            text-align: center;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        .prediction h3 {
+            color: #2e7d32;
+            font-family: 'Montserrat', sans-serif;
+            margin: 0;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 480px) {
+            .form-container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 1.5rem;
+            }
+
+            button {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Algeria Forest Fire Prediction</h1>
+    <div class="form-container">
+        <form id="fire-query-form" action="{{ url_for('predict_datapoint') }}" method="post">
+            <div class="form-group">
+                <label for="Region">Region:</label>
+                <select id="Region" name="Region" required>
+                    <option value="" disabled selected>Select a region</option>
+                    <option value="0">Bejaia</option>
+                    <option value="1">Sidi-Bel-Abbes</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="Temperature">Temperature (°C):</label>
+                <input type="number" id="Temperature" name="Temperature" min="0" max="50" step="0.1" required>
+            </div>
+            <div class="form-group">
+                <label for="RH">Relative Humidity (%):</label>
+                <input type="number" id="RH" name="RH" min="0" max="100" step="1" required>
+            </div>
+            <div class="form-group">
+                <label for="Ws">Wind Speed (km/h):</label>
+                <input type="number" id="Ws" name="Ws" min="0" max="100" step="0.1" required>
+            </div>
+            <div class="form-group">
+                <label for="Rain">Rain (mm):</label>
+                <input type="number" id="Rain" name="Rain" min="0" max="100" step="0.1" required>
+            </div>
+            <div class="form-group">
+                <label for="FFMC">FFMC (Fine Fuel Moisture Code):</label>
+                <input type="number" id="FFMC" name="FFMC" min="0" max="101" step="0.1" required>
+            </div>
+            <div class="form-group">
+                <label for="DMC">DMC (Duff Moisture Code):</label>
+                <input type="number" id="DMC" name="DMC" min="0" max="300" step="0.1" required>
+            </div>
+            <div class="form-group">
+                <label for="ISI">ISI (Initial Spread Index):</label>
+                <input type="number" id="ISI" name="ISI" min="0" max="100" step="0.1" required>
+            </div>
+            <div class="form-group">
+                <label for="Classes">Classes (0 = No Fire, 1 = Fire):</label>
+                <select id="Classes" name="Classes" required>
+                    <option value="" disabled selected>Select fire status</option>
+                    <option value="0">No Fire</option>
+                    <option value="1">Fire</option>
+                </select>
+            </div>
+            <button type="submit">Predict Fire Risk</button>
+        </form>
+
+        {% if results is defined %}
+        <div class="prediction">
+            <h3>Predicted Value: {{ results | round(2) }}</h3>
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>
